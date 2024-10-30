@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrix Experience - Versión 2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(to bottom, #000, #0f0 300%);
+      color: #0f0;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-shadow: 0 0 20px #0f0, 0 0 30px #0f0;
+    }
+
+    .intro {
+      font-size: 1.5rem;
+      margin: 20px 0;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+
+    #userInput {
+      padding: 10px;
+      font-size: 1.5rem;
+      color: #0f0;
+      background-color: #222;
+      border: 2px solid #0f0;
+      outline: none;
+    }
+
+    #revealButton {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      color: #0f0;
+      background-color: #111;
+      border: 2px solid #0f0;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    #revealButton:hover {
+      background-color: #0f0;
+      color: #111;
+    }
+
+    .output {
+      margin-top: 40px;
+    }
+
+    #outputText {
+      font-size: 4rem;
+      text-shadow: 0 0 20px #0f0, 0 0 40px #0f0;
+      color: #0f0;
+      transition: transform 0.5s;
+    }
+
+    body.matrix-mode {
+      background: radial-gradient(circle, #0f0 0%, #000 80%);
+    }
+
+    @keyframes glitch {
+      0% { transform: skew(5deg); }
+      50% { transform: skew(-5deg); }
+      100% { transform: skew(5deg); }
+    }
+
+    #outputText.glitch {
+      animation: glitch 0.1s infinite alternate;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Bienvenido a la Matrix</h1>
+    <p class="intro">Introduce tu código para ingresar:</p>
+    
+    <form id="matrixForm">
+      <input type="text" id="userInput" placeholder="Escribe aquí..." maxlength="20">
+      <button type="button" id="revealButton">Entrar</button>
+    </form>
+    
+    <div class="output">
+      <p id="outputText">_</p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("userInput").addEventListener("input", (e) => {
+      document.getElementById("outputText").textContent = e.target.value || "_";
+    });
+
+    document.getElementById("revealButton").addEventListener("click", () => {
+      const outputText = document.getElementById("outputText");
+      
+      // Activar modo Matrix
+      document.body.classList.toggle("matrix-mode");
+      outputText.classList.toggle("glitch");
+
+      // Mensaje aleatorio en alert con más opciones
+      const randomMessages = [
+        "¿Realmente crees en lo que ves?",
+        "Has encontrado un error en la Matrix...",
+        "Tú controlas tu destino.",
+        "Código alterado. ¿Continuar?"
+      ];
+
+      const randomIndex = Math.floor(Math.random() * randomMessages.length);
+      alert(randomMessages[randomIndex]);
+      
+      setTimeout(() => {
+        document.body.classList.toggle("matrix-mode");
+        outputText.classList.toggle("glitch");
+      }, 800);
+    });
+  </script>
+</body>
+</html>
