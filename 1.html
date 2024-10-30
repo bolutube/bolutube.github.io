@@ -1,123 +1,185 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Matrix Experience - Versión 1</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguimiento de Precios - MercadoLibre</title>
 
-    body {
-      background: linear-gradient(to bottom, #000, #0f0 300%);
-      color: #0f0;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
 
-    .container {
-      text-align: center;
-    }
+    <!-- Configuración de Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdgDaU8cS8xaGPgrt0xECoKD2AhmxJdrw",
+            authDomain: "test-de-aloja.firebaseapp.com",
+            projectId: "test-de-aloja",
+            storageBucket: "test-de-aloja.appspot.com",
+            messagingSenderId: "354174396627",
+            appId: "1:354174396627:web:ff9f1559bf448a1eb40c26",
+            databaseURL: "https://test-de-aloja-default-rtdb.firebaseio.com/"
+        };
 
-    h1 {
-      font-size: 3rem;
-      text-shadow: 0 0 20px #0f0, 0 0 30px #0f0;
-    }
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
 
-    .intro {
-      font-size: 1.5rem;
-      margin: 20px 0;
-    }
-
-    form {
-      margin-top: 20px;
-    }
-
-    #userInput {
-      padding: 10px;
-      font-size: 1.5rem;
-      color: #0f0;
-      background-color: #222;
-      border: 2px solid #0f0;
-      outline: none;
-    }
-
-    #revealButton {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      color: #0f0;
-      background-color: #111;
-      border: 2px solid #0f0;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    #revealButton:hover {
-      background-color: #0f0;
-      color: #111;
-    }
-
-    .output {
-      margin-top: 40px;
-    }
-
-    #outputText {
-      font-size: 4rem;
-      text-shadow: 0 0 20px #0f0, 0 0 40px #0f0;
-      color: #0f0;
-      transition: transform 0.5s;
-    }
-  </style>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 80%; margin: auto; padding: 20px; }
+        h1 { text-align: center; }
+        #url-input { width: 100%; padding: 10px; margin-bottom: 10px; }
+        #add-url-btn { padding: 10px 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        img { width: 50px; height: auto; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Bienvenido a la Matrix</h1>
-    <p class="intro">Introduce tu código para ingresar:</p>
-    
-    <form id="matrixForm">
-      <input type="text" id="userInput" placeholder="Escribe aquí..." maxlength="20">
-      <button type="button" id="revealButton">Entrar</button>
-    </form>
-    
-    <div class="output">
-      <p id="outputText">_</p>
+    <button onclick="descargarErrores()">Descargar Errores</button>
+
+    <script>
+        let errores = []; // Arreglo para almacenar los errores
+
+        // Función para capturar errores globales
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errorData = {
+                message: message,
+                source: source,
+                line: lineno,
+                column: colno,
+                stack: error ? error.stack : 'N/A',
+                time: new Date().toISOString()
+            };
+            errores.push(errorData);
+            console.log('Error capturado:', errorData);
+        };
+
+        // Redefinición de console.error para registrar errores de consola
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            const errorMessage = args.join(' ');
+            const errorData = {
+                message: errorMessage,
+                time: new Date().toISOString()
+            };
+            errores.push(errorData);
+            originalConsoleError.apply(console, args); // Llama al método original
+        };
+
+        // Función para generar y descargar el archivo de errores
+        function descargarErrores() {
+            if (errores.length === 0) {
+                alert('No hay errores registrados para descargar.');
+                return;
+            }
+
+            const mensajeInicial = "Luego de ejecutar el código HTML que detallaré, se han registrado los siguientes errores. Tu misión será corregir el código para la la correcta funcionalidad del sitio. Asegurate de sólo modificar lo absolutamente necesario. No tengas alusinaciones ni inventes codigo ni variables, ni nombres que causen errores o conflictos. No elimines nada de lo que está funcionando correctamente. Solo modifica el error o los errores que se mencionan. No elimines líneas de código que están funcionando correctamente. Tampoco elimines comentarios de código. Los errores encontrados son los siguientes:\n\n";
+
+            const contenido = errores.map(err => {
+                return `Fecha: ${err.time}\nMensaje: ${err.message}\nFuente: ${err.source}\nLínea: ${err.line}\nColumna: ${err.column}\nStack: ${err.stack}\n\n`;
+            }).join('');
+
+            const htmlSource = document.documentElement.outerHTML; 
+            const textoFinal = "\n\n--- ESTE ES EL CODIGO FUENTE SOBRE EL CUAL DEBES TRABAJAR CON SUMO CUIDADO: ---\n\n" + htmlSource;
+
+            const blob = new Blob([mensajeInicial + contenido + textoFinal], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'errores.txt';
+            document.body.appendChild(a);
+            a.click(); 
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Ejemplo de error para probar
+        // console.error('Este es un error de prueba');
+    </script>
+
+    <div class="container">
+        <h1>Seguimiento de Precios en MercadoLibre</h1>
+        <input type="text" id="url-input" placeholder="Ingresa la URL de la publicación">
+        <button id="add-url-btn">Agregar Publicación</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Título</th>
+                    <th>Vendedor</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody id="product-table">
+                <!-- Aquí se mostrarán los datos de las publicaciones -->
+            </tbody>
+        </table>
     </div>
-  </div>
 
-  <script>
-    document.getElementById("userInput").addEventListener("input", (e) => {
-      document.getElementById("outputText").textContent = e.target.value || "_";
-    });
+    <script>
+        // Elementos del DOM
+        const urlInput = document.getElementById('url-input');
+        const addUrlBtn = document.getElementById('add-url-btn');
+        const productTable = document.getElementById('product-table');
 
-    document.getElementById("revealButton").addEventListener("click", () => {
-      const outputText = document.getElementById("outputText");
+        // Función para agregar URL a Firebase
+        function addUrlToFirebase(url) {
+            const newRef = firebase.database().ref('urls').push(); // Usar ref para crear una nueva referencia
+            newRef.set({ url }); // Usar set para guardar el nuevo URL
+        }
 
-      outputText.style.transform = "scale(1.2)";
-      document.body.style.background = "#000";
-      
-      setTimeout(() => {
-        document.body.style.background = "linear-gradient(to bottom, #000, #0f0 300%)";
-        outputText.style.transform = "scale(1)";
-      }, 600);
+        // Función para mostrar los datos de las publicaciones
+        function displayProductData(data) {
+            productTable.innerHTML = '';
 
-      const randomText = [
-        "La Matrix te ha encontrado...",
-        "Sigue el conejo blanco.",
-        "Despierta, Neo...",
-        "Recuerda: todo es una ilusión."
-      ];
-      
-      const randomIndex = Math.floor(Math.random() * randomText.length);
-      alert(randomText[randomIndex]);
-    });
-  </script>
+            data.forEach((item) => {
+                const { imageUrl, title, seller, price } = item;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${imageUrl}" alt="Imagen"></td>
+                    <td>${title}</td>
+                    <td>${seller}</td>
+                    <td>${price}</td>
+                `;
+                productTable.appendChild(row);
+            });
+        }
+
+        // Función para obtener datos de Firebase y mostrarlos en la tabla
+        function fetchProductData() {
+            const urlsRef = firebase.database().ref('urls'); 
+            urlsRef.on('value', (snapshot) => {
+                const urls = [];
+                snapshot.forEach((childSnapshot) => {
+                    const childData = childSnapshot.val();
+                    urls.push(childData.url);
+                });
+
+                const exampleData = [
+                    { imageUrl: 'https://via.placeholder.com/50', title: 'Ejemplo Producto 1', seller: 'Vendedor 1', price: '$1000' },
+                    { imageUrl: 'https://via.placeholder.com/50', title: 'Ejemplo Producto 2', seller: 'Vendedor 2', price: '$2000' }
+                ];
+
+                displayProductData(exampleData); 
+            });
+        }
+
+        // Evento para agregar URL al presionar el botón
+        addUrlBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            if (url) {
+                addUrlToFirebase(url);
+                urlInput.value = ''; 
+            } else {
+                alert('Por favor, ingresa una URL válida.');
+            }
+        });
+
+        // Llama a fetchProductData al cargar la página
+        fetchProductData();
+    </script>
 </body>
 </html>
